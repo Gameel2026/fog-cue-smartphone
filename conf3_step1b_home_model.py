@@ -1,12 +1,3 @@
-"""
-conf3_step1b_home_model.py - CONF3_AMENDMENT_1.md: the home model (LSTM trained on all defog patients).
-1. Operating point: max window F1 on the out-of-fold defog probabilities (results_bmel_posthoc/ref_lstm_defog.npy).
-2. Expected performance on new patients: those out-of-fold probabilities with that pair (+ 2,000-shift surrogate).
-3. Final model trained on all defog patients (PyTorch), exported to edge_home_fp32.npz / edge_home_int8.npz.
-4. E1-home / E2-home: portable streaming fp32 / int8 (fog_edge.py) vs the PyTorch home model on defog.
-5. replay_home.npz for the phone (same signal as replay_defog.npz, reference probabilities of the home model).
-Run from the BMEL folder after conf3_step1_equivalence.py (fog_edge.py next to it). Outputs in results_conference3/.
-"""
 import os
 import json
 import pickle
