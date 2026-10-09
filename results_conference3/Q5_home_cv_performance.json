@@ -1,0 +1,16 @@
+{
+  "theta": [
+    0.85,
+    0.1
+  ],
+  "window_f1": 0.39597739836403323,
+  "false_alarms_per_hour": 26.164934742159318,
+  "coverage_%": 57.12,
+  "coverage_surrogate": 54.94431999999999,
+  "p_coverage": 0.031484257871064465,
+  "timely_%": 8.229426433915211,
+  "timely_surrogate": 6.9231920199501245,
+  "p_timely": 0.15792103948025987,
+  "cue_specificity": 0.8276909361518876,
+  "cue_sensitivity": 0.5878861296184131
+}

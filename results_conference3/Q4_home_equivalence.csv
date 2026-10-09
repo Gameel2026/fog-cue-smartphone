@@ -1,0 +1,3 @@
+implementation,criterion,max_abs_prob_diff,mean_abs_prob_diff,decision_agreement_%,min_patient_agreement_%,ref_false_alarms_per_hour,ref_detected_%,ref_timely_eligible_%,ref_cue_specificity,false_alarms_per_hour,detected_%,timely_eligible_%,cue_specificity,met
+fp32 (portable),E1-home,0.0,0.0,100.0,100.0,13.83211,71.84,8.977556,0.886024,13.83211,71.84,8.977556,0.886024,True
+int8 (portable),E2-home,0.023429,0.001073,99.807887,97.479508,13.83211,71.84,8.977556,0.886024,13.928838,71.68,8.977556,0.885926,True

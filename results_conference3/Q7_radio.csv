@@ -1,0 +1,7 @@
+stream,bytes_per_message,messages_per_s,bytes_per_s,ble_20B_payloads_per_s,reduction_vs_raw_%
+"raw acceleration (3 x 16 bit x 64 Hz), sent every 0.5 s",192,2.0,384.0,20.0,0.0
+"72 features (fp32), every 0.5 s",288,2.0,576.0,30.0,-50.0
+"72 features (fp16), every 0.5 s",144,2.0,288.0,16.0,25.0
+"1 decision byte, every 0.5 s",1,2.0,2.0,2.0,99.4792
+"1 byte per cue state change (lab model, defog)",1,0.0851,0.0851,0.0851,99.9778
+"1 byte per cue state change (home model, defog)",1,0.0088,0.0088,0.0088,99.9977

@@ -1,0 +1,5 @@
+dataset,implementation,windows,max_feature_rel_diff,max_abs_prob_diff,mean_abs_prob_diff,decision_agreement_%,ref_false_alarms_per_hour,ref_detected_%,ref_timely_eligible_%,ref_cue_specificity,false_alarms_per_hour,detected_%,timely_eligible_%,cue_specificity,diff_false_alarms_per_hour,diff_detected_%,diff_timely_eligible_%,diff_cue_specificity,criterion,met
+defog,fp32 (portable),148871,0.0,0.0,0.0,100.0,150.653922,78.56,17.705736,0.658578,150.653922,78.56,17.705736,0.658578,0.0,0.0,0.0,0.0,E1,True
+defog,int8 (portable),148871,0.0,0.038266,0.001415,99.807887,150.653922,78.56,17.705736,0.658578,150.799014,78.56,17.705736,0.657648,0.145092,0.0,0.0,-0.000929,E2,True
+FoG-STAR,fp32 (portable),10071,0.0,0.0,0.0,100.0,103.663986,65.060241,20.779221,0.652217,103.663986,65.060241,20.779221,0.652217,0.0,0.0,0.0,0.0,E1,True
+FoG-STAR,int8 (portable),10071,0.0,0.02279,0.001913,99.731903,103.663986,65.060241,20.779221,0.652217,104.37891,65.060241,20.779221,0.654342,0.714924,0.0,0.0,0.002125,E2,True

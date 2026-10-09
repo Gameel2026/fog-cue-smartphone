@@ -1,0 +1,17 @@
+{
+  "lstm_head_MACs_per_decision": 540800,
+  "MACs_per_second_at_2_decisions": 1081600,
+  "parameters": 68738,
+  "weights_int8_KB": 74.1,
+  "weights_fp32_KB": 268.5,
+  "working_memory_KB_fp32": 7.8,
+  "time_ms_at_1_MAC_per_cycle": {
+    "nRF52840 (64 MHz)": 8.4,
+    "ESP32-S3 (240 MHz, one core)": 2.3
+  },
+  "memory_reference": {
+    "nRF52840": "1 MB flash, 256 KB RAM",
+    "ESP32-S3": "512 KB SRAM"
+  },
+  "note": "analytic estimate; feature extraction (three 256-point FFTs and statistics per window) not included"
+}

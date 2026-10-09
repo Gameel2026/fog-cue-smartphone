@@ -1,0 +1,7 @@
+# PC part (conf3_step1_equivalence.py, conf3_step1b_home_model.py, conf3_step1c_precision.py)
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+scikit-learn>=1.3
+torch>=2.0
+# Phone part (fog_edge.py, conf3_phone_benchmark.py): numpy only (Termux: pkg install python python-numpy)

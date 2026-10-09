@@ -1,0 +1,14 @@
+{
+  "parameters": 68738,
+  "weights_fp32_bytes": 274952,
+  "weights_int8_bytes": 75920,
+  "file_fp32_bytes": 280388,
+  "file_int8_bytes": 82704,
+  "theta": [
+    0.65,
+    0.4
+  ],
+  "pc_ms_median": 3.439500000240514,
+  "pc_ms_p99": 6.666360000963321,
+  "pc_ms_max": 68.91840000025695
+}
