@@ -6,18 +6,26 @@ import platform
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-os.chdir(HERE); sys.path.insert(0, HERE)                 
+os.chdir(HERE); sys.path.insert(0, HERE)                
 import numpy as np
 import fog_edge as fe
 
 MODE = "quick"          
-MODEL = "lab"           
+MODEL = "lab"          
 
 FILES = {"lab": ("edge_model_fp32.npz", "edge_model_int8.npz", "replay_defog.npz"),
          "home": ("edge_home_fp32.npz", "edge_home_int8.npz", "replay_home.npz")}
 if len(sys.argv) > 1: MODE = sys.argv[1]
-if len(sys.argv) > 2: MODEL = sys.argv[2]          
-REALTIME_MIN = 2 if MODE == "quick" else 60
+if len(sys.argv) > 2: MODEL = sys.argv[2]        
+TAG = f"_{sys.argv[3]}" if len(sys.argv) > 3 else ""  
+REALTIME_MIN = 2 if MODE == "quick" else 60         
+
+
+def boottime():
+    try:
+        return time.clock_gettime(time.CLOCK_BOOTTIME)       
+    except Exception:
+        return float("nan")
 
 
 def peak_memory_mb():
@@ -65,13 +73,14 @@ def stages(model_path, raw):
 
 def main_stages():
     raw = np.load(FILES[MODEL][2])["raw"]; F32, F8 = FILES[MODEL][0], FILES[MODEL][1]
-    stages(F32, raw[:32 * 20])                                          
+    stages(F32, raw[:32 * 20])                                           # warm-up
     R = {"model": MODEL, "fp32": stages(F32, raw), "int8": stages(F8, raw)}
-    json.dump(R, open(f"phone_stages_{MODEL}.json", "w"), indent=2)
+    R["device"] = platform.platform(); R["cpu_count"] = os.cpu_count(); R["python"] = platform.python_version(); R["numpy"] = np.__version__
+    json.dump(R, open(f"phone_stages_{MODEL}{TAG}.json", "w"), indent=2)
     for v in ["fp32", "int8"]:
         print(v, {k: round(x["median_ms"], 3) for k, x in R[v].items()}, "(median ms)")
         print(v, {k: round(x["p99_ms"], 3) for k, x in R[v].items()}, "(p99 ms)")
-    print(f"Saved phone_stages_{MODEL}.json in {HERE}")
+    print(f"Saved phone_stages_{MODEL}{TAG}.json in {HERE}")
 
 
 def main():
@@ -82,6 +91,7 @@ def main():
     F32, F8, REPLAY = FILES[MODEL]; R["model"] = MODEL
     d = np.load(REPLAY); raw, p_pc = d["raw"], d["p_pc"]
     print(f"replay: {len(raw) / 64 / 60:.1f} min, {len(raw) // 32} windows")
+    # warm-up, then fidelity + latency (as fast as possible)
     run_replay(F32, raw[:32 * 20])
     p32, ms32 = run_replay(F32, raw)
     p8, ms8 = run_replay(F8, raw)
@@ -91,37 +101,40 @@ def main():
     R["peak_memory_MB"] = peak_memory_mb(); R["mode"] = MODE
     print("fidelity (max |p_phone - p_pc|):", R["fidelity_fp32_vs_pc_max_abs_prob_diff"])
     print("latency fp32:", R["latency_fp32"]); print("latency int8:", R["latency_int8"])
+
     b0 = battery(); m = fe.EdgeLSTM(F8); c = fe.CueController(m)
-    if b0 is None and MODE == "full":
+    if b0 is None and MODE in ("full", "screen"):
         b0 = ask_battery("Battery % NOW (before the run), then press Enter: ")
-    n_win = int(REALTIME_MIN * 60 / 0.5); nrep = len(raw) // 32; late = 0; ms = []; lag = []
-    cpu0, t_start = time.process_time(), time.perf_counter()
-    print(f"real-time run: {REALTIME_MIN} min - screen off, phone unplugged, do not use the phone ...")
+    n_win = int(REALTIME_MIN * 60 / 0.5); nrep = len(raw) // 32; late = 0; ms = []; lag = []; boot = []
+    cpu0, t_start, b_start = time.process_time(), time.perf_counter(), boottime()
+    print(f"real-time run: {REALTIME_MIN} min - screen {'ON (keep it on)' if MODE == 'screen' else 'off'}, phone unplugged, do not use the phone ...")
     for k in range(n_win):
-        if k % nrep == 0: c = fe.CueController(m)                       
-        target = t_start + 0.5 * (k + 1)                             
+        if k % nrep == 0: c = fe.CueController(m)                      
+        target = t_start + 0.5 * (k + 1)                                
         t0 = time.perf_counter(); c.step(raw[(k % nrep) * 32:((k % nrep) + 1) * 32]); t1 = time.perf_counter()
-        ms.append(1000 * (t1 - t0)); lag.append(1000 * (t1 - (target - 0.5)))   
+        ms.append(1000 * (t1 - t0)); lag.append(1000 * (t1 - (target - 0.5))); boot.append(boottime() - b_start)   
         wait = target - time.perf_counter()
         if wait > 0: time.sleep(wait)
         else: late += 1
-    wall = time.perf_counter() - t_start; cpu = time.process_time() - cpu0
+    wall = time.perf_counter() - t_start; cpu = time.process_time() - cpu0; boot_total = boottime() - b_start
     lag = np.asarray(lag)
     R["realtime"] = {"minutes": REALTIME_MIN, **stats(np.asarray(ms)), "deadline_misses": late,
                      "decision_delay_median_ms": float(np.median(lag)), "decision_delay_p99_ms": float(np.percentile(lag, 99)),
                      "decision_delay_max_ms": float(lag.max()), "decisions_delayed_over_100ms": int((lag > 100).sum()),
                      "decisions_delayed_over_500ms": int((lag > 500).sum()),
+                     "decisions_within_100ms_%": 100 * float(np.mean(lag <= 100)), "decisions_within_500ms_%": 100 * float(np.mean(lag <= 500)),
+                     "boottime_seconds": boot_total, "suspended_seconds": boot_total - wall,
                      "cpu_seconds": cpu, "wall_seconds": wall, "cpu_duty_cycle_%": 100 * cpu / wall, "battery_start": b0}
-    np.savetxt(f"phone_realtime_{MODEL}_{MODE}.csv", np.c_[np.arange(n_win), ms, lag], delimiter=",",
-               header="window,processing_ms,decision_delay_ms", comments="", fmt="%.4f")
+    np.savetxt(f"phone_realtime_{MODEL}_{MODE}{TAG}.csv", np.c_[np.arange(n_win), ms, lag, boot], delimiter=",",
+               header="window,processing_ms,decision_delay_ms,boottime_s", comments="", fmt="%.4f")
     R["E3_met"] = bool(R["latency_int8"]["p99_ms"] <= 50 and R["latency_fp32"]["p99_ms"] <= 50
                        and R["fidelity_fp32_vs_pc_max_abs_prob_diff"] <= 1e-4)
-    out = f"phone_results_{MODEL}_{MODE}.json"
-    json.dump(R, open(out, "w"), indent=2, default=str)                
+    out = f"phone_results_{MODEL}_{MODE}{TAG}.json"
+    json.dump(R, open(out, "w"), indent=2, default=str)                 
     print("\nreal-time:", {k: v for k, v in R["realtime"].items() if not k.startswith("battery_")})
     print(f"\nPRE-SPECIFIED E3: {'MET' if R['E3_met'] else 'NOT met'}\nSaved {out} in {HERE}")
     b1 = battery()
-    if b1 is None and MODE == "full":
+    if b1 is None and MODE in ("full", "screen"):
         b1 = ask_battery("Battery % NOW (after the run), then press Enter: ")
     R["realtime"]["battery_end"] = b1
     p0 = b0.get("percentage") if isinstance(b0, dict) else b0; p1 = b1.get("percentage") if isinstance(b1, dict) else b1
