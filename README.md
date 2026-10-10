@@ -69,7 +69,7 @@ Both: Termux (Google Play), Python 3.13, numpy 2.4.
 `phone_results/` (`*_device2` = Pixel 7, otherwise main phone):
 | File | Run |
 |---|---|
-| `phone_results_lab_quick.json` | first quick test, laboratory model |
+| `phone_results_quick.json` | first quick test, laboratory model |
 | `phone_results_home_quick.json` | quick test, home model |
 | `phone_results_lab_full.json`, `phone_realtime_lab_full.csv` | E3 60-min run, screen off |
 | `phone_results_lab_full_run1.json` | earlier 60-min attempt during which the phone was used (not a protocol run) |
