@@ -1,0 +1,29 @@
+{
+  "operations_per_decision": {
+    "filter": 3456,
+    "statistical features": 4320,
+    "spectral features": 26388,
+    "standardisation": 216,
+    "LSTM and head": 1086722,
+    "hysteresis": 2
+  },
+  "total_operations_per_decision": 1121104,
+  "share_%": {
+    "filter": 0.31,
+    "statistical features": 0.39,
+    "spectral features": 2.35,
+    "standardisation": 0.02,
+    "LSTM and head": 96.93,
+    "hysteresis": 0.0
+  },
+  "operations_per_second_at_2_decisions": 2242208,
+  "time_ms_at_1_operation_per_cycle": {
+    "nRF52840 (64 MHz)": 17.5,
+    "ESP32-S3 (240 MHz, one core)": 4.7
+  },
+  "processor_load_%_at_2_decisions": {
+    "nRF52840 (64 MHz)": 3.5,
+    "ESP32-S3 (240 MHz, one core)": 0.93
+  },
+  "assumptions": "approximate floating-point operations of fog_edge.py; FFT 2.5 N log2 N (real N-point); sort 2 n log2 n; one operation per cycle; memory access and transcendental-function cost beyond the counted operations are not modelled"
+}
