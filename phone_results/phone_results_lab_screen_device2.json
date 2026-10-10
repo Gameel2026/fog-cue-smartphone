@@ -1,0 +1,51 @@
+{
+  "device": "Android-17-aarch64-64bit-ELF",
+  "machine": "aarch64",
+  "python": "3.13.13",
+  "numpy": "2.4.4",
+  "cpu_count": 8,
+  "model": "lab",
+  "fidelity_fp32_vs_pc_max_abs_prob_diff": 1.7881393432617188e-07,
+  "latency_fp32": {
+    "median_ms": 2.9270420054672286,
+    "p99_ms": 2.9775020002853125,
+    "max_ms": 3.0474039958789945,
+    "windows": 547
+  },
+  "latency_int8": {
+    "median_ms": 2.9227290069684386,
+    "p99_ms": 3.02889052138198,
+    "max_ms": 3.140380998956971,
+    "windows": 547
+  },
+  "model_file_bytes": {
+    "edge_model_fp32.npz": 280388,
+    "edge_model_int8.npz": 82704
+  },
+  "peak_memory_MB": 30.66015625,
+  "mode": "screen",
+  "realtime": {
+    "minutes": 60,
+    "median_ms": 34.69932099687867,
+    "p99_ms": 37.40125192474807,
+    "max_ms": 41.13391200371552,
+    "windows": 7200,
+    "deadline_misses": 0,
+    "decision_delay_median_ms": 36.0050799936289,
+    "decision_delay_p99_ms": 39.21754153663642,
+    "decision_delay_max_ms": 43.65381599927787,
+    "decisions_delayed_over_100ms": 0,
+    "decisions_delayed_over_500ms": 0,
+    "decisions_within_100ms_%": 100.0,
+    "decisions_within_500ms_%": 100.0,
+    "boottime_seconds": 3600.001301765995,
+    "suspended_seconds": 6.815600499976426e-05,
+    "cpu_seconds": 238.429809519,
+    "wall_seconds": 3600.00123360999,
+    "cpu_duty_cycle_%": 6.623047994900508,
+    "battery_start": 89.0,
+    "battery_end": 85.0,
+    "battery_drop_%": 4.0
+  },
+  "E3_met": true
+}

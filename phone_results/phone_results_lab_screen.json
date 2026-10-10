@@ -1,0 +1,52 @@
+{
+  "device": "Android-16-aarch64-64bit-ELF",
+  "machine": "aarch64",
+  "python": "3.13.13",
+  "numpy": "2.4.4",
+  "cpu_count": 8,
+  "model": "lab",
+  "fidelity_fp32_vs_pc_max_abs_prob_diff": 1.7881393432617188e-07,
+  "latency_fp32": {
+    "median_ms": 3.1279160029953346,
+    "p99_ms": 6.060676557535757,
+    "max_ms": 11.781926994444802,
+    "windows": 547
+  },
+  "latency_int8": {
+    "median_ms": 3.093645005719736,
+    "p99_ms": 3.2277686818270004,
+    "max_ms": 3.3307809935649857,
+    "windows": 547
+  },
+  "model_file_bytes": {
+    "edge_model_fp32.npz": 280388,
+    "edge_model_int8.npz": 82704
+  },
+  "peak_memory_MB": 30.7421875,
+  "mode": "screen",
+  "realtime": {
+    "minutes": 60,
+    "median_ms": 17.85114550148137,
+    "p99_ms": 48.55274246772751,
+    "max_ms": 101.41536498849746,
+    "windows": 7200,
+    "deadline_misses": 0,
+    "decision_delay_median_ms": 20.03973200044129,
+    "decision_delay_p99_ms": 50.71338492052747,
+    "decision_delay_max_ms": 101.63975399336778,
+    "decisions_delayed_over_100ms": 1,
+    "decisions_delayed_over_500ms": 0,
+    "decisions_within_100ms_%": 99.98611111111111,
+    "decisions_within_500ms_%": 100.0,
+    "boottime_seconds": 3600.0026743030176,
+    "suspended_seconds": 5.348901322577149e-05,
+    "cpu_seconds": 153.207992402,
+    "wall_seconds": 3600.0026208140043,
+    "cpu_duty_cycle_%": 4.255774468501854,
+    "battery_start": 23.0,
+    "battery_end": 19.0,
+    "battery_drop_%": 4.0,
+    "battery_note": "battery_end entered manually after the run (prompt not answered before the file was sent); screen on for the whole run, so battery change is not interpreted as controller cost (Amendment 3, A2)"
+  },
+  "E3_met": true
+}
