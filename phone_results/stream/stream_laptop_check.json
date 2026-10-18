@@ -1,0 +1,22 @@
+{
+  "laptop": "Windows-10-10.0.26100-SP0",
+  "python": "3.8.5",
+  "numpy": "1.19.2",
+  "phone": "192.168.1.68",
+  "minutes": 2.0,
+  "windows": 240,
+  "packets_sent": 1920,
+  "samples_per_packet": 4,
+  "decisions_received": 240,
+  "decisions_missing": 0,
+  "roundtrip_delay_median_ms": 62.56639999998015,
+  "roundtrip_delay_p99_ms": 104.04484299998853,
+  "roundtrip_delay_max_ms": 125.06409999997459,
+  "decisions_within_100ms_%": 95.41666666666667,
+  "decisions_within_500ms_%": 100.0,
+  "decisions_over_500ms": 0,
+  "sender_lateness_median_ms": 0.1015999999935957,
+  "sender_lateness_p99_ms": 0.16692899997508442,
+  "sender_lateness_max_ms": 0.4804999999805659,
+  "S2_met": true
+}
