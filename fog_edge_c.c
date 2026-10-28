@@ -12,6 +12,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 #define FS 64
 #define W 32
@@ -228,8 +229,8 @@ static int mode_realtime(Model *m, const char *rp, double minutes, const char *p
         ts.tv_sec = (time_t)target; ts.tv_nsec = (long)((target - ts.tv_sec) * 1e9);
         while (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, NULL) == EINTR) {}
         double a = now_s(CLOCK_MONOTONIC);
+        if (k % nw_rec == 0) ctrl_init(&c, m);
         double p = ctrl_step(&c, r.raw + (size_t)(k % nw_rec) * W * NAX, NULL);
-        if (k % nw_rec == nw_rec - 1) {  }
         double b = now_s(CLOCK_MONOTONIC), bb = now_s(CLOCK_BOOTTIME);
         double btarget = boot0 + (k + 1) * (double)W / FS;
         fprintf(o, "%d,%.12f,%d,%.6f,%.6f,%.6f\n", k, p, c.on, 1e3 * (b - a), 1e3 * (b - target), 1e3 * (bb - btarget));
@@ -299,7 +300,7 @@ static int mode_stream(Model *m, const char *peer, const char *pre) {
                 double t1 = now_s(CLOCK_MONOTONIC); double p = ctrl_step(&c, win, NULL); double t2 = now_s(CLOCK_MONOTONIC);
                 unsigned char rep[REP_SZ]; uint32_t kk = (uint32_t)k; unsigned char on = (unsigned char)c.on;
                 memcpy(rep, &kk, 4); rep[4] = on; memcpy(rep + 5, &p, 8);
-                if (send(s, rep, REP_SZ, 0) != REP_SZ) die("send failed");
+                if (send(s, rep, REP_SZ, MSG_NOSIGNAL) != REP_SZ) { fprintf(stderr, "send failed at window %d\n", k); }
                 fprintf(o, "%d,%.12f,%d,%.6f,%.6f,%.6f,%.6f,%ld\n", k, p, c.on, 1e3 * (t2 - t1), 1e3 * (t2 - t_arr), t_arr - w0,
                         now_s(CLOCK_BOOTTIME) - b0, seqerr);
                 if (k % 600 == 0) { printf("window %d  p=%.3f  cue=%s  processing %.2f ms\n", k, p, c.on ? "ON" : "off", 1e3 * (t2 - t1)); fflush(stdout); }
@@ -318,6 +319,7 @@ static int mode_stream(Model *m, const char *peer, const char *pre) {
 }
 
 int main(int argc, char **argv) {
+    signal(SIGPIPE, SIG_IGN);
     init_tables();
     if (argc < 2) { fprintf(stderr, "usage: fog_edge_c bench MODEL REPLAY PREFIX [repeats] | realtime MODEL REPLAY MINUTES PREFIX | dataset MODEL STREAMS OUT.csv | stream MODEL (listen|LAPTOP_IP) PREFIX\n"); return 2; }
     if (!strcmp(argv[1], "bench") && argc >= 5) return mode_bench(load_model(argv[2]), argv[3], argv[4], argc > 5 ? atoi(argv[5]) : 1);

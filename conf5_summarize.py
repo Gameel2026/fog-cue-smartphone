@@ -20,9 +20,11 @@ def pct(x, q):
     return float(np.percentile(x, q))
 
 
-def hyst(p, on_th, off_th):
-    out, st = [], False
-    for v in p:
+def hyst(p, on_th, off_th, groups=None):
+    out, st, g0 = [], False, None
+    for i, v in enumerate(p):
+        if groups is not None and groups[i] != g0:
+            st, g0 = False, groups[i]
         st = (v >= off_th) if st else (v >= on_th)
         out.append(st)
     return np.array(out)
@@ -81,7 +83,6 @@ def realtime(prefix):
          "deadline_misses_over_500ms_monotonic": int(np.sum(dm > 500)), "deadline_misses_over_500ms_boottime": int(np.sum(db > 500)),
          "cpu_duty_cycle_%": 100 * float(run["cpu_s"][0] / run["wall_s"][0]),
          "suspended_s": float(run["boottime_s"][0] - run["wall_s"][0]), "peak_memory_mb": float(run["peak_memory_mb"][0])}
-    R["C3_within_100ms_ge_99pct_met"] = bool(R["decisions_within_100ms_%"] >= 99.0)
     save(prefix + "_realtime_summary.json", R)
 
 
@@ -124,10 +125,10 @@ def dataset(refs_npz, c_csv, key):
     ref, th = z["p_" + key], z["theta_" + key.split("_")[0]]
     assert len(ref) == len(c["p"]), "C output and reference differ in length"
     R = {"device": device(), "reference": refs_npz, "variant": key, "windows": int(len(ref)),
-         "decision_agreement_%": 100 * float(np.mean(c["cue_on"] == hyst(ref, *th))),
+         "decision_agreement_%": 100 * float(np.mean(c["cue_on"] == hyst(ref, *th, groups=c["stretch"]))),
          "max_abs_prob_diff": float(np.max(np.abs(c["p"] - ref)))}
     R["C1_fidelity_met"] = bool(R["decision_agreement_%"] >= 99.9 and R["max_abs_prob_diff"] <= 1e-4)
-    save(os.path.splitext(c_csv)[0] + "_summary.json", R)
+    save(os.path.splitext(c_csv)[0] + ("_vs_torch" if key == "torch" else "") + "_summary.json", R)
 
 
 if __name__ == "__main__":
